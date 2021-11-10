@@ -23,14 +23,6 @@ module.exports = function () {
 	router
 		.route('/:id')
 		.get((req, res, next) => {
-			// const result = customers.customers.find(
-			// 	(customer) => customer.customer_id === req.params.id
-			// );
-			// if (result) {
-			// 	res.send(result);
-			// } else {
-			// 	res.status(404).send();
-			// }
 			customers.customers.forEach((customer) => {
 				if (customer.customer_id === Number(req.params.id)) {
 					res.send(customer);
