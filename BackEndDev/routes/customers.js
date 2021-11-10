@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var customers = require("../mockData.json/customers.json")
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.send("<h1>Testing</h1>");
+  res.json(customers)
 });
 
 module.exports = router;
