@@ -3,7 +3,7 @@ var router = express.Router();
 var products = require("../mockData.json/products.json");
 
 
-module.exports = function () {
+module.exports = function (db) {
 	router
 		.route('/')
 		.get((req, res, next) => {
@@ -20,8 +20,7 @@ module.exports = function () {
 				if (product.product_id === String(req.params.id)) {
 					res.send(product);
 					found=true
-					}
-				
+				}
 			});
 			if (!found) {		
 			res.status(404).send(); 

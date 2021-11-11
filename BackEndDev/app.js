@@ -5,12 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var dotenv = require("dotenv")
 dotenv.config();
-
+var db = require("./config/database/db")
 var customerRouter = require('./routes/customers');
 var orderRouter = require('./routes/orders');
 var productsRouter = require('./routes/products'); //added for products
-
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,9 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-app.use('/api/customers', customerRouter());
+app.use('/api/customers', customerRouter(db));
 app.use('/api/orders', orderRouter);
-app.use('/api/products', productsRouter()); //added for products
+app.use('/api/products', productsRouter(db)); //added for products
 app.get('/', function (req, res) {
 	res.send('<h1>hello world</h1>')
 })
