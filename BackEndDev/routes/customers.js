@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var customers = require('../mockData.json/customers.json');
 const { restart } = require('nodemon');
+const { NotFound } = require('http-errors');
 
 // /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -23,13 +24,17 @@ module.exports = function () {
 	router
 		.route('/:id')
 		.get((req, res, next) => {
-			customers.customers.forEach((customer) => {
+			customers.customers.forEach((customer) => { 
+				let found=false
 				if (customer.customer_id === Number(req.params.id)) {
 					res.send(customer);
-				} else {
-					res.status(404).send();
-				}
+					found=true
+					}
+				
 			});
+			if (!found) {		
+			res.status(404).send(); 
+			}
 		})
 		.put((req, res) => {
 			// editing customer
