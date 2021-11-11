@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var customerRouter = require('./routes/customers');
 var orderRouter = require('./routes/orders');
+var productsRouter = require('./routes/products'); //added for products
 
 var app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/customers', customerRouter());
 app.use('/api/orders', orderRouter);
+app.use('/api/products', productsRouter()); //added for products
 app.get('/', function (req, res) {
 	res.send('<h1>hello world</h1>')
 })
