@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 var customerRouter = require('./routes/customers');
 
+const port = 8001;  //added this to preserve a port
+
 var app = express();
 
 // view engine setup
@@ -38,5 +40,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+app.listen(port, ()=>{
+  console.log(`Running on Port ${port}.`)
+})
 
 module.exports = app;
