@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var customers = require('../mockData.json/customers.json');
-const { restart } = require('nodemon');
+
 
 
 // /* GET home page. */
