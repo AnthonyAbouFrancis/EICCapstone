@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var customers = require('../mockData.json/customers.json');
 const { restart } = require('nodemon');
-const { NotFound } = require('http-errors');
+
 
 // /* GET home page. */
 // router.get('/', function(req, res, next) {
