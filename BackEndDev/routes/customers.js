@@ -14,28 +14,26 @@ module.exports = function () {
 			const newCustomer = req.body;
 
 			// validate newCustomer data fields (number and types)
-			// CURRENTLY NOT WORKING (404 every time)
 			if (
-				req.body
-				// newCustomer.first_name &&
-				// typeof newCustomer.first_name === 'string' &&
-				// newCustomer.last_name &&
-				// typeof newCustomer.last_name === 'string' &&
-				// newCustomer.phone &&
-				// typeof newCustomer.phone === 'number' &&
-				// newCustomer.email &&
-				// typeof newCustomer.email === 'string' &&
-				// newCustomer.customer_notes &&
-				// typeof newCustomer.customer_notes === 'string' &&
-				// newCustomer.address &&
-				// typeof newCustomer.address === 'string'
+				newCustomer.first_name &&
+				typeof newCustomer.first_name === 'string' &&
+				newCustomer.last_name &&
+				typeof newCustomer.last_name === 'string' &&
+				newCustomer.phone &&
+				typeof newCustomer.phone === 'number' &&
+				newCustomer.email &&
+				typeof newCustomer.email === 'string' &&
+				newCustomer.customer_notes &&
+				typeof newCustomer.customer_notes === 'string' &&
+				newCustomer.address &&
+				typeof newCustomer.address === 'string'
 			) {
 				validCustomer = true;
 			}
 
 			if (validCustomer) {
 				// logic to INSERT this customer into database here
-				res.send(req.body);
+				res.send(newCustomer);
 				// res.send('New Customer successfully added');
 			} else {
 				console.log('Invalid Customer object');
