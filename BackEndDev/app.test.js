@@ -21,6 +21,10 @@ describe('CUSTOMERS', ()=>{
         
         
     })
+    test ("Single customer by id", async () =>{
+        const response = await request(app).get("")
+    }
+        
     //Test 3. Test for getting a singe customer by id
         
     })
