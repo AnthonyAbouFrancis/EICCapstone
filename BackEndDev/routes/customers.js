@@ -60,6 +60,9 @@ module.exports = function (db) {
 			if (validCustomer) {
 				// logic to INSERT this customer into database here
 				try {
+					// start a transaction
+					await db.beginTransaction();
+
 					const newCustomerAdded = await db.query(
 						`INSERT into customer 
 						(customer_id, first_name, middle_name, last_name, phone_country_code, phone, email, customer_notes, street, city, zip_code, country)
@@ -79,6 +82,9 @@ module.exports = function (db) {
 							newCustomer.country,
 						]
 					);
+
+					// commit the transaction
+					await db.commit();
 
 					//////////////// Testing different ways to get a successful/useful output upon adding customer /////////////////////
 					console.log('newCustomerAdded: ' + newCustomerAdded);
