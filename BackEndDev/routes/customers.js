@@ -25,7 +25,6 @@ module.exports = function (db) {
 			}
 		})
 		.post(async (req, res) => {
-			console.log(req.body);
 			let validCustomer = false;
 			const newCustomer = req.body;
 
@@ -35,35 +34,42 @@ module.exports = function (db) {
 				typeof newCustomer.first_name === 'string' &&
 				newCustomer.last_name &&
 				typeof newCustomer.last_name === 'string' &&
+				newCustomer.middle_name &&
+				typeof newCustomer.middle_name === 'string' &&
+				newCustomer.phone_country_code &&
+				typeof newCustomer.phone_country_code === 'number' &&
 				newCustomer.phone &&
 				typeof newCustomer.phone === 'number' &&
 				newCustomer.email &&
 				typeof newCustomer.email === 'string' &&
 				newCustomer.customer_notes &&
 				typeof newCustomer.customer_notes === 'string' &&
-				newCustomer.address &&
-				typeof newCustomer.address === 'string'
+				newCustomer.street &&
+				typeof newCustomer.street === 'string' &&
+				newCustomer.city &&
+				typeof newCustomer.city === 'string' &&
+				newCustomer.zip_code &&
+				typeof newCustomer.zip_code === 'string' &&
+				newCustomer.country &&
+				typeof newCustomer.country === 'string' 
 			) {
 				validCustomer = true;
 			}
+			console.log(validCustomer)
 
 			if (validCustomer) {
 				// logic to INSERT this customer into database here
 				try {
-					await db
+					let newCustomerAdded = await db
 						.query(
 							`INSERT into customer 
-						(first_name, last_name, phone, email, customer_notes, address)
-						VALUES (
-							${newCustomer.first_name},
-							${newCustomer.last_name},
-							${newCustomer.phone},
-							${newCustomer.email},
-							${newCustomer.customer_notes},
-							${newCustomer.address}
-							);`
+						(customer_id, first_name, middle_name, last_name, phone_country_code, phone, email, customer_notes, street, city, zip_code, country)
+						VALUES (?, ?, ?, ?, ?,?,?,?,?,?,?,?);`, 
+						[newCustomer.customer_id, newCustomer.first_name, newCustomer.middle_name, newCustomer.last_name, newCustomer.phone_country_code, newCustomer.phone, newCustomer.email, newCustomer.customer_notes, newCustomer.street, newCustomer.city, newCustomer.zip_code, newCustomer.country]
 						)
-						.then(res.send('New Customer successfully added'));
+					console.log(newCustomerAdded)
+					res.json(newCustomerAdded)
+						
 				} catch (er) {
 					res.status(400).send(er);
 				}
@@ -82,8 +88,8 @@ module.exports = function (db) {
 			try {
 				// sql query
 				const [rows, fields] = await db.query(
-					`SELECT * FROM customer 
-					WHERE customer_id == ${Number(req.params.id)};`
+					'SELECT * FROM `customer` WHERE `customer_id` = ?;',
+					[req.params.id]
 				);
 				// validation of db result
 				if (rows) {
@@ -92,7 +98,7 @@ module.exports = function (db) {
 				} else {
 					// throw error if db returns nothing or errors out
 					throw new Error(
-						`No Customers with ID ${Number(req.params.id)}`
+						`not valid`
 					);
 				}
 				// send error status and send error message
@@ -109,7 +115,7 @@ module.exports = function (db) {
 			// });
 
 			if (found) {
-				res.send(result);
+				res.json(result);
 			} else {
 				console.log(`Customer not found with ID ${req.params.id}`);
 				res.status(404).send();
