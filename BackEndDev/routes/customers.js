@@ -87,17 +87,17 @@ module.exports = function (db) {
 					await db.commit();
 
 					//////////////// Testing different ways to get a successful/useful output upon adding customer /////////////////////
-					console.log('newCustomerAdded: ' + newCustomerAdded);
-					console.log(
-						'newCustomerAdded JSON: ' + json(newCustomerAdded)
-					);
-					console.log('newCustomer: ' + newCustomer);
-					console.log('newCustomer JSON: ' + json(newCustomer));
+					// console.log('newCustomerAdded: ' + newCustomerAdded);
+					// console.log(
+					// 	'newCustomerAdded JSON: ' + json(newCustomerAdded)
+					// );
+					// console.log('newCustomer: ' + newCustomer);
+					// console.log('newCustomer JSON: ' + json(newCustomer));
 
 					// wasn't working:
 					// res.json(newCustomerAdded);
 					// haven't tried:
-					// res.send(newCustomer);
+					res.send(newCustomer);
 				} catch (er) {
 					res.status(400).send(er);
 				}
@@ -123,23 +123,24 @@ module.exports = function (db) {
 					[req.params.id]
 				);
 				// validation of db result
-				if (rows) {
+				console.log(rows)
+				if (rows && rows.length > 0) {
 					found = true;
 					result = res.json(rows);
 				} else {
-					// throw error if db returns nothing or errors out
+					console.log("error ran")
 					throw new Error('not valid');
 				}
 				// send error status and send error message
 			} catch (er) {
-				res.status(400).send(er);
+				res.status(400).send("Customer not found");
 			}
 
 			if (found) {
 				res.json(result);
 			} else {
 				console.log('Customer not found');
-				res.status(404).send();
+				res.status(404).send("Customer not found");
 			}
 		})
 		.put(async (req, res) => {
@@ -177,13 +178,19 @@ module.exports = function (db) {
 					]
 				);
 
-				found = true;
+				
+				if (existingCustomerUpdated[0].affectedRows > 0){
+					found = true;
+				} else {
+					throw new Error('not valid');
+				}
+				
 			} catch (er) {
 				res.status(400).send(er);
 			}
 
 			if (found) {
-				res.send('Successfully updated customer');
+				res.json(updatedCustomer)
 			} else {
 				console.log('Customer not found');
 				res.status(404).send();
@@ -191,7 +198,6 @@ module.exports = function (db) {
 		})
 		.delete(async (req, res) => {
 			let found = false;
-
 			try {
 				const existingCustomerDeleted = await db.query(
 					`DELETE FROM customer
@@ -199,16 +205,15 @@ module.exports = function (db) {
 					[req.params.id]
 				);
 
-				found = true;
+				if (existingCustomerDeleted[0].affectedRows > 0){
+					found = true;
+					res.send('Successfully deleted customer');
+				} else {
+					throw new Error('not valid');
+				}
+				
 			} catch (er) {
-				res.status(400).send(er);
-			}
-
-			if (found) {
-				res.send('Successfully deleted customer');
-			} else {
-				console.log('Customer not found');
-				res.status(404).send();
+				res.status(400).send("customer not found");
 			}
 		});
 
