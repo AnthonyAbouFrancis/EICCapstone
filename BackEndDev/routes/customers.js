@@ -7,7 +7,6 @@ module.exports = function (db) {
 		.route('/')
 		.get(async (req, res, next) => {
 			// validation of user input
-
 			try {
 				// sql query
 				const [rows, fields] = await db.query(
@@ -50,8 +49,24 @@ module.exports = function (db) {
 
 			if (validCustomer) {
 				// logic to INSERT this customer into database here
-				res.send(newCustomer);
-				// res.send('New Customer successfully added');
+				try {
+					db.query(
+						`INSERT into customer 
+						(first_name, last_name, phone, email, customer_notes, address)
+						VALUES (
+							${newCustomer.first_name},
+							${newCustomer.last_name},
+							${newCustomer.phone},
+							${newCustomer.email},
+							${newCustomer.customer_notes},
+							${newCustomer.address}
+							);`
+					);
+
+					res.send('New Customer successfully added');
+				} catch (er) {
+					res.status(400).send(er);
+				}
 			} else {
 				console.log('Invalid Customer object');
 				res.status(404).send();
@@ -60,16 +75,38 @@ module.exports = function (db) {
 
 	router
 		.route('/:id')
-		.get((req, res, next) => {
+		.get(async (req, res, next) => {
 			let found = false; // flag for if customer is found
 			let result; // holds customer object to return
 
-			customers.customers.forEach((customer) => {
-				if (customer.customer_id === Number(req.params.id)) {
+			try {
+				// sql query
+				const [rows, fields] = await db.query(
+					`SELECT * FROM customer 
+					WHERE customer_id == ${Number(req.params.id)};`
+				);
+				// validation of db result
+				if (rows) {
 					found = true;
-					result = customer;
+					result = res.json(rows);
+				} else {
+					// throw error if db returns nothing or errors out
+					throw new Error(
+						`No Customers with ID ${Number(req.params.id)}`
+					);
 				}
-			});
+				// send error status and send error message
+			} catch (er) {
+				res.status(400).send(er);
+			}
+
+			// Array searching through mock JSON data
+			// customers.customers.forEach((customer) => {
+			// 	if (customer.customer_id === Number(req.params.id)) {
+			// 		found = true;
+			// 		result = customer;
+			// 	}
+			// });
 
 			if (found) {
 				res.send(result);
@@ -80,16 +117,35 @@ module.exports = function (db) {
 		})
 		.put((req, res) => {
 			let found = false;
-			let targetCustomer;
 			const updatedCustomer = req.body;
 
-			customers.customers.forEach((customer) => {
-				if (customer.customer_id === Number(req.params.id)) {
-					found = true;
-					targetCustomer = customer;
-					customer = updatedCustomer; // this will have to be logic to update the database
-				}
-			});
+			try {
+				db.query(
+					`UPDATE customer
+					SET 
+					first_name = ${updatedCustomer.first_name},
+					last_name = ${updatedCustomer.last_name},
+					phone = ${updatedCustomer.phone},
+					email = ${updatedCustomer.email},
+					customer_notes = ${updatedCustomer.customer_notes},
+					address = ${updatedCustomer.address}
+					WHERE customer_id == ${Number(req.params.id)}
+					;`
+				);
+
+				found = true;
+			} catch (er) {
+				res.status(400).send(er);
+			}
+
+			// Array searching through mock JSON data
+			// customers.customers.forEach((customer) => {
+			// 	if (customer.customer_id === Number(req.params.id)) {
+			// 		found = true;
+			// 		targetCustomer = customer;
+			// 		customer = updatedCustomer; // this will have to be logic to update the database
+			// 	}
+			// });
 
 			if (found) {
 				res.send('Successfully updated customer');
@@ -100,6 +156,26 @@ module.exports = function (db) {
 		})
 		.delete((req, res) => {
 			let found = false;
+
+			try {
+				db.query(
+					`DELETE FROM customer
+					WHERE customer_id == ${Number(req.params.id)};`
+				);
+
+				found = true;
+			} catch (er) {
+				res.status(400).send(er);
+			}
+
+			if (found) {
+				res.send(
+					`Successfully deleted Customer with ID ${req.params.id}`
+				);
+			} else {
+				console.log(`Customer not found with ID ${req.params.id}`);
+				res.status(404).send();
+			}
 		});
 
 	return router;
