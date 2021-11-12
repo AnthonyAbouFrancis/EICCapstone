@@ -60,7 +60,7 @@ module.exports = function (db) {
 			if (validCustomer) {
 				// logic to INSERT this customer into database here
 				try {
-					let newCustomerAdded = await db.query(
+					const newCustomerAdded = await db.query(
 						`INSERT into customer 
 						(customer_id, first_name, middle_name, last_name, phone_country_code, phone, email, customer_notes, street, city, zip_code, country)
 						VALUES (?,?,?,?,?,?,?,?,?,?,?,?);`,
@@ -141,7 +141,7 @@ module.exports = function (db) {
 			const updatedCustomer = req.body;
 
 			try {
-				await db.query(
+				const existingCustomerUpdated = await db.query(
 					`UPDATE customer SET 
 					first_name = ?,
 					middle_name = ?,
@@ -187,7 +187,7 @@ module.exports = function (db) {
 			let found = false;
 
 			try {
-				await db.query(
+				const existingCustomerDeleted = await db.query(
 					`DELETE FROM customer
 					WHERE customer_id = ?;`,
 					[req.params.id]
