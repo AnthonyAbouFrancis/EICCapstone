@@ -24,7 +24,7 @@ module.exports = function (db) {
 				res.status(400).send(er);
 			}
 		})
-		.post((req, res) => {
+		.post(async (req, res) => {
 			console.log(req.body);
 			let validCustomer = false;
 			const newCustomer = req.body;
@@ -50,8 +50,9 @@ module.exports = function (db) {
 			if (validCustomer) {
 				// logic to INSERT this customer into database here
 				try {
-					db.query(
-						`INSERT into customer 
+					await db
+						.query(
+							`INSERT into customer 
 						(first_name, last_name, phone, email, customer_notes, address)
 						VALUES (
 							${newCustomer.first_name},
@@ -61,9 +62,8 @@ module.exports = function (db) {
 							${newCustomer.customer_notes},
 							${newCustomer.address}
 							);`
-					);
-
-					res.send('New Customer successfully added');
+						)
+						.then(res.send('New Customer successfully added'));
 				} catch (er) {
 					res.status(400).send(er);
 				}
@@ -115,13 +115,14 @@ module.exports = function (db) {
 				res.status(404).send();
 			}
 		})
-		.put((req, res) => {
+		.put(async (req, res) => {
 			let found = false;
 			const updatedCustomer = req.body;
 
 			try {
-				db.query(
-					`UPDATE customer
+				await db
+					.query(
+						`UPDATE customer
 					SET 
 					first_name = ${updatedCustomer.first_name},
 					last_name = ${updatedCustomer.last_name},
@@ -131,9 +132,8 @@ module.exports = function (db) {
 					address = ${updatedCustomer.address}
 					WHERE customer_id == ${Number(req.params.id)}
 					;`
-				);
-
-				found = true;
+					)
+					.then((found = true));
 			} catch (er) {
 				res.status(400).send(er);
 			}
@@ -154,16 +154,16 @@ module.exports = function (db) {
 				res.status(404).send();
 			}
 		})
-		.delete((req, res) => {
+		.delete(async (req, res) => {
 			let found = false;
 
 			try {
-				db.query(
-					`DELETE FROM customer
+				await db
+					.query(
+						`DELETE FROM customer
 					WHERE customer_id == ${Number(req.params.id)};`
-				);
-
-				found = true;
+					)
+					.then((found = true));
 			} catch (er) {
 				res.status(400).send(er);
 			}
